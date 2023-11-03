@@ -8,7 +8,6 @@ copyright:           "2023 Paul Hübner"
 
 extra-source-files:
 - README.md
-- CHANGELOG.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -21,6 +20,8 @@ description:         Please see the README on GitHub at <https://github.com/Arra
 
 dependencies:
 - base >= 4.7 && < 5
+- dotenv >= 0.11 && < 0.12
+- optparse-applicative >= 0.17
 
 ghc-options:
 - -Wall
