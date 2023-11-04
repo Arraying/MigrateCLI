@@ -36,7 +36,7 @@ parseOptions = Configuration
   <*> strOption
      ( long "dir"
     <> metavar "DIRECTORY"
-    <> value "."
+    <> value "migrations"
     <> help "The migrations directory" )
   <*> switch
      ( long "no-dotenv"
@@ -50,7 +50,7 @@ parseOptions = Configuration
     <> command "refresh" (info (pure Refresh) idm) )
 
 run :: Configuration -> IO ()
-run (Configuration h p d usr pwd dir nv cmd) = do
+run (Configuration h p d usr pwd f nv cmd) = do
   _ <- 
     if not nv then onMissingFile (loadFile dotEnvConfig) (return ()) 
     else return ()
@@ -59,8 +59,8 @@ run (Configuration h p d usr pwd dir nv cmd) = do
   d' <- resolveDatabase d
   usr' <- resolveUser usr
   pwd' <- resolvePassword pwd
-  let config = Configuration h' p' d' usr' pwd' dir nv cmd
-  return ()
+  let config = Configuration h' p' d' usr' pwd' f nv cmd
+  runMigrateCLI config
 
 main :: IO ()
 main = run =<< execParser opts
