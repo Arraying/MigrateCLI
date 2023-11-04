@@ -43,10 +43,10 @@ These can be specified with `--host`, `--port`, `--database`, `--user` and `--pa
 For any of these not specified, the values of the environment variables `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` will be used, respectively.
 Should any of these be empty, the following hardcoded values will be used, respectively: `localhost`, `5432`, `postgres`, `postgres`, *(empty string)*.
 
-By default, it will attempt to load a `.env` file present in the directory in which it was called. In most cases, it should not be necessary to manually specify the credentials
+By default, it will attempt to load a `.env` file present in the directory in which it was called. In most cases, it should not be necessary to manually specify the credentials. When a variable is present both as a normal environment variable and within a `.env`, the former will take priority.
 
 ## Flags
 
 A custom migration directory can be specified using `--dir <DIR>`.
 
-To not load the `.env` automatically, `--no-env` may be used.
+To not load the `.env` automatically, `--no-dotenv` may be used.
