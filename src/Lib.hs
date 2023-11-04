@@ -21,7 +21,7 @@ data Configuration = Configuration
   , runCmd   :: Command }
 
 data Command
-  = Add String
+  = New String
   | Migrate
   | Revert
   | Refresh
@@ -29,7 +29,7 @@ data Command
 runMigrateCLI :: Configuration -> IO ()
 runMigrateCLI config = do
   case runCmd config of
-    (Add str) -> addMigration str $ dir config
+    (New str) -> addMigration str $ dir config
     Migrate   -> putStrLn $ "Migrating"
     Revert    -> putStrLn $ "Revert"
     Refresh   -> putStrLn $ "Refresh"

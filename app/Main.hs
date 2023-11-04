@@ -42,7 +42,7 @@ parseOptions = Configuration
      ( long "no-dotenv"
     <> help "Whether to NOT load the .env in the cwd" )
   <*> subparser
-     ( command "add" (info (Add <$> argument str 
+     ( command "new" (info (New <$> argument str 
        ( metavar "NAME" 
       <> help "The name of the migration" )) idm)
     <> command "migrate" (info (pure Migrate) idm)
