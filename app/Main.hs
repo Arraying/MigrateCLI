@@ -1,11 +1,13 @@
-module Main (main) where
+module Main
+    ( main
+    ) where
 
-import Configuration.Dotenv
-import Control.Monad
-import Lib
-import Options.Applicative
-import Text.Read
-import System.Environment
+import           Configuration.Dotenv
+import           Control.Monad
+import           Lib
+import           Options.Applicative
+import           System.Environment
+import           Text.Read
 
 parseOptions :: Parser Configuration
 parseOptions = Configuration
@@ -71,7 +73,7 @@ main = run =<< execParser opts
 
 resolveHost :: String -> IO String
 resolveHost "" = envOrBackup "PGHOST" "localhost"
-resolveHost x = return x
+resolveHost x  = return x
 
 resolvePort :: Int -> IO Int
 resolvePort 0 = envOrBackup' "PGPORT" 5432
@@ -79,15 +81,15 @@ resolvePort x = return x
 
 resolveDatabase :: String -> IO String
 resolveDatabase "" = envOrBackup "PGDATABASE" "postgres"
-resolveDatabase x = return x
+resolveDatabase x  = return x
 
 resolveUser :: String -> IO String
 resolveUser "" = envOrBackup "PGUSER" "postgres"
-resolveUser x = return x
+resolveUser x  = return x
 
 resolvePassword :: String -> IO String
 resolvePassword "" = envOrBackup "PGPASSWORD" ""
-resolvePassword x = return x
+resolvePassword x  = return x
 
 envOrBackup :: String -> String -> IO String
 envOrBackup name def = do

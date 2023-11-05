@@ -1,19 +1,19 @@
 module Lib
-  ( Configuration(..)
-  , Command(..)
-  , runMigrateCLI
-  ) where
+    ( Command (..)
+    , Configuration (..)
+    , runMigrateCLI
+    ) where
 
-import qualified Data.List as List
-import Config
-import Control.Monad
-import Data.Function
-import Data.Time.Calendar
-import Data.Time.Clock
-import Data.Time.LocalTime
-import System.Directory
-import System.FilePath
-import Database
+import           Config
+import           Control.Monad
+import           Data.Function
+import qualified Data.List           as List
+import           Data.Time.Calendar
+import           Data.Time.Clock
+import           Data.Time.LocalTime
+import           Database
+import           System.Directory
+import           System.FilePath
 
 runMigrateCLI :: Configuration -> IO ()
 runMigrateCLI config = do

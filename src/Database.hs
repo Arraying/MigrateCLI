@@ -1,18 +1,18 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Database
-  ( initializeTable
-  , getPerformedMigrations
-  , runMigrationUp
-  , runMigrationDown
-  ) where
+    ( getPerformedMigrations
+    , initializeTable
+    , runMigrationDown
+    , runMigrationUp
+    ) where
 
-import qualified Data.ByteString.Char8 as Char8
-import qualified Data.Text as Text
-import Config
-import Data.Time.Clock
-import Database.PostgreSQL.Simple
-import Queries
+import           Config
+import qualified Data.ByteString.Char8      as Char8
+import qualified Data.Text                  as Text
+import           Data.Time.Clock
+import           Database.PostgreSQL.Simple
+import           Queries
 
 initializeTable :: Configuration -> IO ()
 initializeTable cfg = do
@@ -51,5 +51,5 @@ cx :: Configuration -> IO Connection
 cx cfg = connectPostgreSQL $ Char8.pack $ makeConnectionString cfg
 
 makeConnectionString :: Configuration -> String
-makeConnectionString c = 
+makeConnectionString c =
   "postgresql://" ++ username c ++ ":" ++ password c ++ "@" ++ host c ++ ":" ++ show (port c) ++ "/" ++ database c
