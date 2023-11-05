@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Configuration.Dotenv
+import Control.Monad
 import Lib
 import Options.Applicative
 import Text.Read
@@ -8,13 +9,13 @@ import System.Environment
 
 parseOptions :: Parser Configuration
 parseOptions = Configuration
-  <$> strOption 
+  <$> strOption
      ( long "host"
     <> metavar "HOST"
     <> value ""
     <> help "The host (excl. port)" )
   <*> option auto
-     ( long "port" 
+     ( long "port"
     <> metavar "PORT"
     <> value 0
     <> help "The port number" )
@@ -42,18 +43,17 @@ parseOptions = Configuration
      ( long "no-dotenv"
     <> help "Whether to NOT load the .env in the cwd" )
   <*> subparser
-     ( command "new" (info (New <$> argument str 
-       ( metavar "NAME" 
+     ( command "status" (info (pure Status) idm)
+    <> command "new" (info (New <$> argument str
+       ( metavar "NAME"
       <> help "The name of the migration" )) idm)
     <> command "migrate" (info (pure Migrate) idm)
-    <> command "revert" (info (pure Revert) idm) 
+    <> command "revert" (info (pure Revert) idm)
     <> command "refresh" (info (pure Refresh) idm) )
 
 run :: Configuration -> IO ()
 run (Configuration h p d usr pwd f nv cmd) = do
-  _ <- 
-    if not nv then onMissingFile (loadFile dotEnvConfig) (return ()) 
-    else return ()
+  unless nv $ onMissingFile (loadFile dotEnvConfig) (return ())
   h' <- resolveHost h
   p' <- resolvePort p
   d' <- resolveDatabase d

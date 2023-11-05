@@ -13,7 +13,8 @@ data Configuration = Configuration
   , runCmd   :: Command }
 
 data Command
-  = New String
+  = Status
+  | New String
   | Migrate
   | Revert
   | Refresh

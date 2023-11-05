@@ -18,12 +18,26 @@ import Database
 runMigrateCLI :: Configuration -> IO ()
 runMigrateCLI config = do
   case runCmd config of
+    Status    -> status config
     (New str) -> addMigration str $ dir config
     Migrate   -> do
       initializeTable config
       performMigration config
     Revert    -> revertMigration config
     Refresh   -> putStrLn $ "Refresh"
+
+status :: Configuration -> IO ()
+status cfg = do
+  (success, localButNotMigrated, migratedButNotLocal) <- getSummary cfg
+  unless (null success) (do
+    putStrLn "Performed migrations:"
+    mapM_ (\x -> putStrLn $ "* " ++ x) success)
+  unless (null localButNotMigrated) (do
+      putStrLn "Pending migrations:"
+      mapM_ (\x -> putStrLn $ "- " ++ x) $ fmap fst localButNotMigrated)
+  unless (null migratedButNotLocal) (do
+    putStrLn "Migrations in the database but unknown to this project:"
+    mapM_ (\x -> putStrLn $ "+ " ++ x) migratedButNotLocal)
 
 addMigration :: String -> String -> IO ()
 addMigration name path = do
@@ -42,9 +56,7 @@ addMigration name path = do
 performMigration :: Configuration -> IO ()
 performMigration cfg = do
   putStrLn "Running all pending migrations..."
-  performed <- getPerformedMigrations cfg
-  defined <- getDefinedMigrations cfg
-  let diff = List.sortBy (compare `on` snd) $ filter (\(x, _) -> x `notElem` performed) defined
+  (_, diff, _) <- getSummary cfg
   mapM_ (performIndividualMigration cfg) diff
   putStrLn "Done"
 
@@ -56,10 +68,10 @@ performIndividualMigration cfg (name, path) = do
 
 revertMigration :: Configuration -> IO ()
 revertMigration cfg = do
-  performed <- getPerformedMigrations cfg
-  if null performed then putStrLn "No known migrations, cannot revert"
+  (success, _, _) <- getSummary cfg
+  if null success then putStrLn "No known migrations, cannot revert"
   else (do
-    let hd = maximum performed
+    let hd = maximum success
     putStrLn "Reverting most recent migration..."
     revertIndividualMigration cfg (hd, dir cfg </> hd))
 
@@ -70,6 +82,14 @@ revertIndividualMigration cfg (name, path) = do
   _ <- runMigrationDown cfg name sql
   putStrLn $ "- " ++ name
 
+getSummary :: Configuration -> IO ([String], [(String, FilePath)], [String])
+getSummary cfg = do
+  performed <- getPerformedMigrations cfg
+  defined <- getDefinedMigrations cfg
+  let success = List.sort $ performed `List.intersect` fmap fst defined
+  let localButNotMigrated = List.sortBy (compare `on` snd) $ filter (\(x, _) -> x `notElem` performed) defined
+  let migratedButNotLocal = List.sort $ filter (\x -> x `notElem` fmap fst defined) performed
+  return (success, localButNotMigrated, migratedButNotLocal)
 
 getDefinedMigrations :: Configuration -> IO [(String, FilePath)]
 getDefinedMigrations cfg = do

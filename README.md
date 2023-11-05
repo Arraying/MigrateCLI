@@ -36,6 +36,11 @@ To revert all migrations and re-run them from the ground up:
 $ mgcli refresh
 ```
 
+To see the status of the current state:
+```
+$ mgcli status
+```
+
 ## Credentials
 
 In order to perform migrations, credentials are required.
