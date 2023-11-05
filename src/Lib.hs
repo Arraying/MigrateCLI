@@ -4,16 +4,20 @@ module Lib
     , runMigrateCLI
     ) where
 
-import           Config
-import           Control.Monad
-import           Data.Function
+import           Config              (Command (..), Configuration (..))
+import           Control.Monad       (filterM, unless)
+import           Data.Function       (on)
 import qualified Data.List           as List
-import           Data.Time.Calendar
-import           Data.Time.Clock
-import           Data.Time.LocalTime
-import           Database
-import           System.Directory
-import           System.FilePath
+import           Data.Time.Calendar  (toGregorian)
+import           Data.Time.Clock     (UTCTime (utctDay, utctDayTime),
+                                      getCurrentTime)
+import           Data.Time.LocalTime (TimeOfDay (todHour, todMin, todSec),
+                                      timeToTimeOfDay)
+import           Database            (getPerformedMigrations, initializeTable,
+                                      runMigrationDown, runMigrationUp)
+import           System.Directory    (createDirectory, createDirectoryIfMissing,
+                                      doesDirectoryExist, listDirectory)
+import           System.FilePath     ((</>))
 
 runMigrateCLI :: Configuration -> IO ()
 runMigrateCLI config = do

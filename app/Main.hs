@@ -2,12 +2,18 @@ module Main
     ( main
     ) where
 
-import           Configuration.Dotenv
-import           Control.Monad
-import           Lib
-import           Options.Applicative
-import           System.Environment
-import           Text.Read
+import           Configuration.Dotenv (Config (..), loadFile, onMissingFile)
+import           Control.Monad        (unless)
+import           Lib                  (Command (Migrate, New, Refresh, Revert, Status),
+                                       Configuration (Configuration),
+                                       runMigrateCLI)
+import           Options.Applicative  (Parser, argument, auto, command,
+                                       execParser, fullDesc, header, help,
+                                       helper, idm, info, long, metavar, option,
+                                       str, strOption, subparser, switch, value,
+                                       (<**>))
+import           System.Environment   (lookupEnv)
+import           Text.Read            (readMaybe)
 
 parseOptions :: Parser Configuration
 parseOptions = Configuration

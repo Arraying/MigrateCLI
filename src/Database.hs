@@ -10,9 +10,14 @@ module Database
 import           Config
 import qualified Data.ByteString.Char8      as Char8
 import qualified Data.Text                  as Text
-import           Data.Time.Clock
-import           Database.PostgreSQL.Simple
-import           Queries
+import           Data.Time.Clock            (getCurrentTime)
+import           Database.PostgreSQL.Simple (Connection, Only (..), close,
+                                             connectPostgreSQL, execute,
+                                             execute_, query_, withTransaction)
+import           Queries                    (queryAddMigration,
+                                             queryCreateMigrationsTable,
+                                             queryMigrations,
+                                             queryRemoveMigration, str2Query)
 
 initializeTable :: Configuration -> IO ()
 initializeTable cfg = do
