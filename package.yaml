@@ -55,7 +55,7 @@ executables:
     - MigrateCLI
 
 tests:
-  MigrateCLI-test:
+  mgcli-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
