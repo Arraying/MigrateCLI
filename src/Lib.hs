@@ -24,7 +24,7 @@ runMigrateCLI config = do
       initializeTable config
       performMigration config
     Revert    -> revertMigration config
-    Refresh   -> putStrLn $ "Refresh"
+    Refresh   -> refreshMigrations config
 
 status :: Configuration -> IO ()
 status cfg = do
@@ -73,14 +73,25 @@ revertMigration cfg = do
   else (do
     let hd = maximum success
     putStrLn "Reverting most recent migration..."
-    revertIndividualMigration cfg (hd, dir cfg </> hd))
-
+    revertIndividualMigration cfg (hd, dir cfg </> hd)
+    putStrLn "Done")
 
 revertIndividualMigration :: Configuration -> (String, FilePath) -> IO ()
 revertIndividualMigration cfg (name, path) = do
   sql <- readFile $ path </> "down.sql"
   _ <- runMigrationDown cfg name sql
   putStrLn $ "- " ++ name
+
+refreshMigrations :: Configuration -> IO ()
+refreshMigrations cfg = do
+  (successRaw, _, _) <- getSummary cfg
+  let success = reverse successRaw
+  putStrLn "Reversing all existing migrations..."
+  mapM_ (\x -> revertIndividualMigration cfg (x, dir cfg </> x)) success
+  putStrLn "Re-running all migrations..."
+  (_, pending, _) <- getSummary cfg
+  mapM_ (performIndividualMigration cfg) pending
+  putStrLn "Done"
 
 getSummary :: Configuration -> IO ([String], [(String, FilePath)], [String])
 getSummary cfg = do
